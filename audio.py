@@ -1,3 +1,5 @@
+import signal
+
 import numpy as np
 import sounddevice as sd
 
@@ -89,17 +91,21 @@ class AudioEngine:
             signal = signal.reshape(-1, 1)
 
         print(f"-> Measuring... (fs={self.fs}, Input Device={self.input_device_id}, Output Device={self.output_device_id})")
-        
+        extra_sec = 1.0
+        extra_frames = int(extra_sec * self.fs)
+
+        pad = np.zeros((extra_frames, signal.shape[1]), dtype=signal.dtype)
+        signal_padded = np.concatenate([signal, pad], axis=0)
         # core function: playrec
         # blocking=True will block until playback and recording are completed, suitable for measurement program
         recording = sd.playrec(
-            signal, 
+            signal_padded, 
             samplerate=self.fs, 
             channels=self.input_channels, 
             dtype='float32',
             device=(self.input_device_id, self.output_device_id), # (Input, Output)
             input_mapping=input_channel_idx,
-            output_mapping=output_channel_idx,        
+            output_mapping=output_channel_idx, 
             blocking=True
         )
         recording = np.asarray(recording)
@@ -116,8 +122,8 @@ if __name__ == "__main__":
     output_device_id = 5
     engine.select_device(input_id=input_device_id, output_id=output_device_id)
     gen = SignalGenerator(fs=48000, amplitude_db=-10)
-    sweep_signal = gen.generate_sweep(duration=2.0) # generate 2 seconds sweep signal
+    sweep_signal = gen.generate_sweep(duration=2.0) # 生成2秒扫频
 
-    # 5. perform measurement
-    print("\nPreparing to play and record...")
+    # 5. 执行测量
+    print("\n准备开始播放录音...")
     recorded_data = engine.play_record(sweep_signal, input_channel_idx=1, output_channel_idx=10)
