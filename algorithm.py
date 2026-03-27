@@ -40,7 +40,7 @@ class ImpedanceAnalyzer:
     @cached_property
     def reflection_factor(self)->np.ndarray:
         """compute reflection factor"""
-        reflection_factor = (self.H12 - np.exp(1j * self.k * self.s)) / (-self.H12 + np.exp(-1j * self.k * self.s))*np.exp(-2j * self.k * self.mic1_pos)
+        reflection_factor = (self.H12 - np.exp(-1j * self.k * self.s)) / (-self.H12 + np.exp(1j * self.k * self.s))*np.exp(2j * self.k * self.mic1_pos)
         return reflection_factor
     @cached_property
     def impedance(self)->np.ndarray:
