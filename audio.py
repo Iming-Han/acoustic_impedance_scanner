@@ -113,7 +113,6 @@ class AudioEngine:
 if __name__ == "__main__":
     # 1. instantiate engine
     engine = AudioEngine(fs=48000)
-    
     # 2. list all devices
     # user first look at this list, decide which ID to use
     print("Scanning audio devices...")
