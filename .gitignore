@@ -1,3 +1,4 @@
 /code_review.md
 __pycache__/**
 .vscode/**
+.ipynb_checkpoints/**
